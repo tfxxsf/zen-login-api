@@ -4,6 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import Login from "./pages/Login";
 import Index from "./pages/Index";
 import Extrato from "./pages/Extrato";
 import Entradas from "./pages/Entradas";
@@ -19,6 +21,12 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+const ProtectedDashboard = ({ children }: { children: React.ReactNode }) => (
+  <ProtectedRoute>
+    <DashboardLayout>{children}</DashboardLayout>
+  </ProtectedRoute>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -26,17 +34,18 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<DashboardLayout><Index /></DashboardLayout>} />
-          <Route path="/extrato" element={<DashboardLayout><Extrato /></DashboardLayout>} />
-          <Route path="/gerente" element={<DashboardLayout><Gerente /></DashboardLayout>} />
-          
-          <Route path="/entradas" element={<DashboardLayout><Entradas /></DashboardLayout>} />
-          <Route path="/saidas-pix" element={<DashboardLayout><SaidasPix /></DashboardLayout>} />
-          <Route path="/saidas-cripto" element={<DashboardLayout><SaidasCripto /></DashboardLayout>} />
-          <Route path="/infracoes" element={<DashboardLayout><Infracoes /></DashboardLayout>} />
-          <Route path="/transferencias" element={<DashboardLayout><Transferencias /></DashboardLayout>} />
-          <Route path="/ajuda" element={<DashboardLayout><Ajuda /></DashboardLayout>} />
-          <Route path="/configuracoes" element={<DashboardLayout><Configuracoes /></DashboardLayout>} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<ProtectedDashboard><Index /></ProtectedDashboard>} />
+          <Route path="/extrato" element={<ProtectedDashboard><Extrato /></ProtectedDashboard>} />
+          <Route path="/gerente" element={<ProtectedDashboard><Gerente /></ProtectedDashboard>} />
+          <Route path="/entradas" element={<ProtectedDashboard><Entradas /></ProtectedDashboard>} />
+          <Route path="/saidas-pix" element={<ProtectedDashboard><SaidasPix /></ProtectedDashboard>} />
+          <Route path="/saidas-cripto" element={<ProtectedDashboard><SaidasCripto /></ProtectedDashboard>} />
+          <Route path="/infracoes" element={<ProtectedDashboard><Infracoes /></ProtectedDashboard>} />
+          <Route path="/transferencias" element={<ProtectedDashboard><Transferencias /></ProtectedDashboard>} />
+          <Route path="/ajuda" element={<ProtectedDashboard><Ajuda /></ProtectedDashboard>} />
+          <Route path="/configuracoes" element={<ProtectedDashboard><Configuracoes /></ProtectedDashboard>} />
+          <Route path="/financeiro" element={<ProtectedDashboard><Financeiro /></ProtectedDashboard>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
