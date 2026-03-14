@@ -1,12 +1,17 @@
-import { Calendar, Moon, Bell, User } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
+import { Calendar, Moon, Bell, User, LogOut } from "lucide-react";
+import { useMe, useLogout } from "@/hooks/useApi";
 
 export function DashboardHeader() {
+  const { data: user } = useMe();
+  const logout = useLogout();
+
+  const displayName = user?.name?.split(" ")[0] ?? "Usuário";
+
   return (
     <header className="border-b border-border/40 bg-background px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h1 className="text-xl font-semibold">Boas vindas, Fabiano</h1>
+          <h1 className="text-xl font-semibold">Boas vindas, {displayName}</h1>
           <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center">
             <div className="w-2 h-2 rounded-full bg-foreground"></div>
           </div>
@@ -16,13 +21,6 @@ export function DashboardHeader() {
           <button className="p-2 hover:bg-accent rounded-lg transition-colors">
             <Calendar className="h-5 w-5 text-primary" />
           </button>
-
-          <div className="flex items-center gap-3 px-4 py-2 bg-card rounded-lg border border-border/40">
-            <div className="text-sm">
-              <span className="font-medium">R$ 1.0K</span>
-              <span className="text-muted-foreground"> / R$ 100.0K</span>
-            </div>
-          </div>
 
           <button className="p-2 hover:bg-accent rounded-lg transition-colors">
             <Moon className="h-5 w-5" />
@@ -34,6 +32,14 @@ export function DashboardHeader() {
 
           <button className="p-2 hover:bg-accent rounded-lg transition-colors">
             <User className="h-5 w-5" />
+          </button>
+
+          <button
+            onClick={() => logout.mutate()}
+            className="p-2 hover:bg-destructive/20 rounded-lg transition-colors"
+            title="Sair"
+          >
+            <LogOut className="h-5 w-5 text-destructive" />
           </button>
         </div>
       </div>

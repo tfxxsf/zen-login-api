@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { User, Shield, Code, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useMe } from "@/hooks/useApi";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const tabs = [
   { id: "pessoal", label: "Pessoal", icon: User },
@@ -12,13 +14,13 @@ const tabs = [
 
 export default function Configuracoes() {
   const [activeTab, setActiveTab] = useState("pessoal");
+  const { data: user, isLoading } = useMe();
 
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">Configurações</h2>
 
       <div className="flex gap-6">
-        {/* Sidebar tabs */}
         <div className="w-56 space-y-1">
           {tabs.map((tab) => (
             <button
@@ -37,75 +39,66 @@ export default function Configuracoes() {
           ))}
         </div>
 
-        {/* Content */}
         <div className="flex-1 space-y-6">
           {activeTab === "pessoal" && (
             <>
-              {/* Profile header */}
               <Card className="p-6 bg-card border-border/40 flex items-center gap-6">
                 <div className="w-20 h-20 rounded-full bg-muted border-2 border-primary/50 flex items-center justify-center">
                   <User className="h-10 w-10 text-muted-foreground" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold">Fabiano Silva</h3>
-                  <p className="text-muted-foreground text-sm">@fabianosil</p>
-                  <p className="text-sm mt-1">
-                    Status: <span className="text-primary">Conta ativa ✓</span>
-                  </p>
+                  {isLoading ? (
+                    <>
+                      <Skeleton className="h-6 w-40 mb-2" />
+                      <Skeleton className="h-4 w-24" />
+                    </>
+                  ) : (
+                    <>
+                      <h3 className="text-xl font-bold">{user?.name ?? "—"}</h3>
+                      <p className="text-muted-foreground text-sm">@{user?.username ?? "—"}</p>
+                      <p className="text-sm mt-1">
+                        Status: <span className="text-primary">{user?.status ?? "Conta ativa"} ✓</span>
+                      </p>
+                    </>
+                  )}
                 </div>
               </Card>
 
-              {/* Personal info */}
               <Card className="p-6 bg-card border-border/40">
                 <h4 className="text-lg font-semibold mb-4">Informações pessoais</h4>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center justify-between py-3 border-b border-border/40">
-                    <span className="text-sm text-muted-foreground flex items-center gap-2"><User className="h-4 w-4" /> Usuário:</span>
-                    <span className="text-sm">fabianosil</span>
-                  </div>
-                  <div className="flex items-center justify-between py-3 border-b border-border/40">
-                    <span className="text-sm text-muted-foreground flex items-center gap-2"><User className="h-4 w-4" /> Nome:</span>
-                    <span className="text-sm">Fabiano Silva</span>
-                  </div>
-                  <div className="flex items-center justify-between py-3 border-b border-border/40">
-                    <span className="text-sm text-muted-foreground flex items-center gap-2"><Shield className="h-4 w-4" /> Documento:</span>
-                    <span className="text-sm">000.000.000-00</span>
-                  </div>
-                  <div className="flex items-center justify-between py-3 border-b border-border/40">
-                    <span className="text-sm text-muted-foreground flex items-center gap-2"><Globe className="h-4 w-4" /> Email:</span>
-                    <span className="text-sm">fabiano@email.com</span>
-                  </div>
-                  <div className="flex items-center justify-between py-3">
-                    <span className="text-sm text-muted-foreground flex items-center gap-2"><User className="h-4 w-4" /> Celular:</span>
-                    <span className="text-sm">(00) 00000-0000</span>
-                  </div>
+                  {[
+                    { icon: User, label: "Usuário", value: user?.username },
+                    { icon: User, label: "Nome", value: user?.name },
+                    { icon: Shield, label: "Documento", value: user?.document },
+                    { icon: Globe, label: "Email", value: user?.email },
+                    { icon: User, label: "Celular", value: user?.phone },
+                  ].map((item, i) => (
+                    <div key={i} className={cn("flex items-center justify-between py-3", i < 4 && "border-b border-border/40")}>
+                      <span className="text-sm text-muted-foreground flex items-center gap-2">
+                        <item.icon className="h-4 w-4" /> {item.label}:
+                      </span>
+                      {isLoading ? <Skeleton className="h-4 w-28" /> : <span className="text-sm">{item.value ?? "—"}</span>}
+                    </div>
+                  ))}
                 </div>
               </Card>
 
-              {/* Taxas */}
               <Card className="p-6 bg-card border-border/40">
                 <h4 className="text-lg font-semibold mb-4">Taxas</h4>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center justify-between py-3 border-b border-border/40">
-                    <span className="text-sm text-muted-foreground">Entrada</span>
-                    <span className="text-sm">0.00%</span>
-                  </div>
-                  <div className="flex items-center justify-between py-3 border-b border-border/40">
-                    <span className="text-sm text-muted-foreground">Taxa Mínima</span>
-                    <span className="text-sm">R$ 0.60</span>
-                  </div>
-                  <div className="flex items-center justify-between py-3 border-b border-border/40">
-                    <span className="text-sm text-muted-foreground">Saque via Dashboard</span>
-                    <span className="text-sm">1.50%</span>
-                  </div>
-                  <div className="flex items-center justify-between py-3 border-b border-border/40">
-                    <span className="text-sm text-muted-foreground">Saque via Api</span>
-                    <span className="text-sm">1.50%</span>
-                  </div>
-                  <div className="flex items-center justify-between py-3">
-                    <span className="text-sm text-muted-foreground">Saque Cripto</span>
-                    <span className="text-sm">3.00%</span>
-                  </div>
+                  {[
+                    { label: "Entrada", value: user?.fees?.entrada ?? "0.00%" },
+                    { label: "Taxa Mínima", value: user?.fees?.taxa_minima ?? "R$ 0.60" },
+                    { label: "Saque via Dashboard", value: user?.fees?.saque_dashboard ?? "1.50%" },
+                    { label: "Saque via Api", value: user?.fees?.saque_api ?? "1.50%" },
+                    { label: "Saque Cripto", value: user?.fees?.saque_cripto ?? "3.00%" },
+                  ].map((item, i) => (
+                    <div key={i} className={cn("flex items-center justify-between py-3", i < 4 && "border-b border-border/40")}>
+                      <span className="text-sm text-muted-foreground">{item.label}</span>
+                      {isLoading ? <Skeleton className="h-4 w-16" /> : <span className="text-sm">{item.value}</span>}
+                    </div>
+                  ))}
                 </div>
               </Card>
             </>

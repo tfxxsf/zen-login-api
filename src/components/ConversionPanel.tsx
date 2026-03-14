@@ -1,8 +1,10 @@
 import { Card, CardHeader, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { TrendingUp, Layers, CreditCard, FileText, RefreshCcw } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { LucideIcon } from "lucide-react";
 
-const conversionData = [
+const defaultConversionData = [
   { label: "Conversão Geral", value: 40.87, icon: TrendingUp },
   { label: "Pix", value: 40.87, icon: Layers },
   { label: "Cartão de Crédito", value: 0, icon: CreditCard },
@@ -10,7 +12,24 @@ const conversionData = [
   { label: "Taxa de estorno", value: 0, icon: RefreshCcw },
 ];
 
-export function ConversionPanel() {
+const iconMap: Record<string, LucideIcon> = {
+  "Conversão Geral": TrendingUp,
+  "Pix": Layers,
+  "Cartão de Crédito": CreditCard,
+  "Boleto": FileText,
+  "Taxa de estorno": RefreshCcw,
+};
+
+interface ConversionPanelProps {
+  conversionData?: { label: string; value: number }[];
+  isLoading?: boolean;
+}
+
+export function ConversionPanel({ conversionData, isLoading }: ConversionPanelProps) {
+  const items = conversionData
+    ? conversionData.map((item) => ({ ...item, icon: iconMap[item.label] || TrendingUp }))
+    : defaultConversionData;
+
   return (
     <Card className="bg-card border-border/40">
       <CardHeader>
@@ -27,18 +46,24 @@ export function ConversionPanel() {
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        {conversionData.map((item) => (
-          <div key={item.label} className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center gap-2">
-                <item.icon className="h-4 w-4 text-primary" />
-                <span className="text-foreground">{item.label}</span>
+        {isLoading ? (
+          Array.from({ length: 5 }).map((_, i) => (
+            <Skeleton key={i} className="h-10 rounded" />
+          ))
+        ) : (
+          items.map((item) => (
+            <div key={item.label} className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <div className="flex items-center gap-2">
+                  <item.icon className="h-4 w-4 text-primary" />
+                  <span className="text-foreground">{item.label}</span>
+                </div>
+                <span className="font-semibold">{item.value}%</span>
               </div>
-              <span className="font-semibold">{item.value}%</span>
+              <Progress value={item.value} className="h-2" />
             </div>
-            <Progress value={item.value} className="h-2" />
-          </div>
-        ))}
+          ))
+        )}
       </CardContent>
     </Card>
   );
