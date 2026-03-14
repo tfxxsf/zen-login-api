@@ -4,9 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { QrCode, Loader2 } from "lucide-react";
-import { useReceive } from "@/hooks/useApi";
-import { toast } from "sonner";
+import { QrCode } from "lucide-react";
 
 interface ReceiveModalProps {
   open: boolean;
@@ -18,36 +16,11 @@ const quickValues = [10, 20, 50, 100];
 export function ReceiveModal({ open, onOpenChange }: ReceiveModalProps) {
   const [valor, setValor] = useState("0,00");
   const [descricao, setDescricao] = useState("");
-  const receive = useReceive();
 
   const handleQuickValue = (value: number) => {
     const current = parseFloat(valor.replace(".", "").replace(",", ".")) || 0;
     const newValue = current + value;
     setValor(newValue.toFixed(2).replace(".", ","));
-  };
-
-  const handleSubmit = async () => {
-    if (!valor || valor === "0,00") {
-      toast.error("Informe um valor.");
-      return;
-    }
-
-    try {
-      const result = await receive.mutateAsync({
-        valor,
-        descricao: descricao || undefined,
-      });
-      toast.success("QR Code gerado com sucesso!");
-      // If API returns a QR code URL or data, handle it here
-      if (result?.qr_code) {
-        // Could show QR code in a new view
-      }
-      onOpenChange(false);
-      setValor("0,00");
-      setDescricao("");
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Erro ao gerar QR Code.");
-    }
   };
 
   return (
@@ -61,26 +34,39 @@ export function ReceiveModal({ open, onOpenChange }: ReceiveModalProps) {
         </DialogHeader>
 
         <div className="space-y-5">
+          {/* Valor */}
           <div className="space-y-2">
             <Label className="text-sm font-medium">Valor *</Label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">R$</span>
-              <Input value={valor} onChange={(e) => setValor(e.target.value)} className="pl-10 bg-background border-border/60" />
+              <Input
+                value={valor}
+                onChange={(e) => setValor(e.target.value)}
+                className="pl-10 bg-background border-border/60"
+              />
             </div>
             <div className="flex gap-2 flex-wrap">
               {quickValues.map((v) => (
-                <Button key={v} variant="outline" size="sm" className="text-xs border-border/60" onClick={() => handleQuickValue(v)}>
+                <Button
+                  key={v}
+                  variant="outline"
+                  size="sm"
+                  className="text-xs border-border/60"
+                  onClick={() => handleQuickValue(v)}
+                >
                   +R$ {v.toFixed(2).replace(".", ",")}
                 </Button>
               ))}
             </div>
           </div>
 
+          {/* Taxa info */}
           <div className="text-xs text-muted-foreground space-y-0.5">
             <p>*Taxa de transferência: 0.00%</p>
             <p>*Taxa mínima: R$ 0.60</p>
           </div>
 
+          {/* Descrição */}
           <div className="space-y-1.5">
             <Label className="text-sm font-medium">Descrição</Label>
             <Textarea
@@ -91,16 +77,9 @@ export function ReceiveModal({ open, onOpenChange }: ReceiveModalProps) {
             />
           </div>
 
-          <Button
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium flex items-center gap-2"
-            onClick={handleSubmit}
-            disabled={receive.isPending}
-          >
-            {receive.isPending ? (
-              <><Loader2 className="h-4 w-4 animate-spin" /> Gerando...</>
-            ) : (
-              <><QrCode className="h-4 w-4" /> Gerar QR Code</>
-            )}
+          <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium flex items-center gap-2">
+            <QrCode className="h-4 w-4" />
+            Gerar QR Code
           </Button>
         </div>
       </DialogContent>
