@@ -36,18 +36,20 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-svh flex flex-col items-center justify-center bg-background px-4">
+    <div className="min-h-svh flex flex-col items-center justify-center bg-background px-4 relative overflow-hidden">
       {/* Glow effect */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-[-100px] left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full blur-[150px] pointer-events-none opacity-20"
+        style={{ background: 'radial-gradient(circle, hsl(186 100% 50%) 0%, transparent 70%)' }}
+      />
 
       {/* Logo */}
-      <div className="mb-10 flex items-center gap-2 select-none">
+      <div className="mb-10 flex items-center gap-1.5 select-none z-10">
         <span className="text-3xl font-bold tracking-tight text-primary">PIX</span>
         <span className="text-3xl font-bold tracking-tight text-foreground">UP</span>
       </div>
 
       {/* Card */}
-      <div className="w-full max-w-[420px] rounded-2xl border border-border bg-card p-8 space-y-6 relative">
+      <div className="w-full max-w-[420px] rounded-2xl border border-border bg-card/80 backdrop-blur-sm p-8 space-y-6 z-10">
         <div className="text-center">
           <h1 className="text-xl font-semibold tracking-tight text-foreground">
             Acesse sua conta
